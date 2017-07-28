@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User,String >
 {
-    @Query("select user from User user where user.userName = :userName and user.deleted='0'")
-    public User findAllDeploymentPeopleOnDuties(@Param("userName") String userName);
+    @Query("select user from User user where user.email = :email and user.deleted='0'")
+    public User findUserByEmail(@Param("email") String email);
 }

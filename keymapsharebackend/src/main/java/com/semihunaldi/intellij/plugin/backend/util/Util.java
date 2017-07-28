@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by semih on 26.04.2017.
@@ -65,5 +66,10 @@ public class Util
             }
         }
         return false;
+    }
+
+    public static String generateToken()
+    {
+        return UUID.randomUUID().toString().toLowerCase().replace("-","");
     }
 }
