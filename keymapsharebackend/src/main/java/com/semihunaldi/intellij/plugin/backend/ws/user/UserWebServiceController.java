@@ -11,4 +11,9 @@ public class UserWebServiceController extends BaseWebServiceController implement
     @Autowired
     private UserService userService;
 
+    @Override
+    public String getString()
+    {
+        return "Hello";
+    }
 }
