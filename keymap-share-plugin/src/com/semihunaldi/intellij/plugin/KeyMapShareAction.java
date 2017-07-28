@@ -1,10 +1,13 @@
 package com.semihunaldi.intellij.plugin;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.keymap.Keymap;
-import com.intellij.openapi.keymap.ex.KeymapManagerEx;
-import com.thoughtworks.xstream.XStream;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 
 public class KeyMapShareAction extends AnAction
 {
@@ -13,16 +16,36 @@ public class KeyMapShareAction extends AnAction
     {
         try
         {
-            Keymap keymap = KeymapManagerEx.getInstanceEx().getAllKeymaps()[0];
-            XStream xstream = new XStream();
-//            String xml = xstream.toXML(keymap); //out of memory. need to find another solution
-//            Keymap readKeyMap = (Keymap) xstream.fromXML(xml);
-            System.out.println("done");
+            KeyMapShareDialog keyMapShareDialog = new KeyMapShareDialog(event.getProject());
+            keyMapShareDialog.createCenterPanel();
+            keyMapShareDialog.show();
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            Notification notification = new Notification("keyMapShareError","Keymap Share",e.getMessage(), NotificationType.ERROR);
+            notification.notify(event.getProject());
         }
+    }
 
+    private File getKeyMapFile(Keymap selectedKeymap)
+    {
+        String ideaConfigBasePath = System.getProperties().getProperty("idea.config.path");
+        File ideaKeyMapsFolder = new File(ideaConfigBasePath.concat("/keymaps/"));
+        if(ideaKeyMapsFolder.exists() && ideaKeyMapsFolder.isDirectory())
+        {
+            File selectedKeyMapFile = FileUtils.getFile(ideaKeyMapsFolder.getAbsolutePath().concat("/").concat(selectedKeymap.getName().concat(".xml")));
+            if(selectedKeyMapFile.exists() && selectedKeyMapFile.isFile())
+            {
+                return selectedKeyMapFile;
+            }
+            else
+            {
+                throw new RuntimeException("Desired file can not be found on config path");
+            }
+        }
+        else
+        {
+            throw new RuntimeException("IDEA Config path not found");
+        }
     }
 }

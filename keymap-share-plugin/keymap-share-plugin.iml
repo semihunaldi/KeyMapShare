@@ -9,5 +9,6 @@
     </content>
     <orderEntry type="jdk" jdkName="IntelliJ IDEA IU-171.4073.35" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="commons-io-2.4" level="project" />
   </component>
 </module>

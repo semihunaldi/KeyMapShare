@@ -87,7 +87,6 @@ public class PasswordGenerator
 
     public enum PasswordGenerationCriteria
     {
-        //TODO anlamlı isimler ile anlaşılabilir criterialar tanımlamak daha güzel olabilir.
         BASIC_PASSWORD(6,6,0,0,1),
         MODERATE_PASSWORD(6,6,1,0,1),
         HARD_PASSWORD(6,6,1,1,1),
