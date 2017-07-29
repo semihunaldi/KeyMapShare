@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class KeyMapShareDialog extends DialogWrapper
 {
-    KeyMapShareDialog(Project project)
+    public KeyMapShareDialog(Project project)
     {
         super(project);
         this.project = project;
@@ -30,7 +30,7 @@ public class KeyMapShareDialog extends DialogWrapper
 
     @Nullable
     @Override
-    protected JComponent createCenterPanel()
+    public JComponent createCenterPanel()
     {
         prepareKeyMapsList();
         return keyMapDialogUI.getRootPane();

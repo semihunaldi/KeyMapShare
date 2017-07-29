@@ -20,6 +20,8 @@ public class KeyMapShareAction extends AnAction
     {
         try
         {
+            //TODO for tests
+            prefs.put(KeyMapConstants.USER_LOGGED_IN,Boolean.FALSE.toString());
             if(isUserLoggedIn())
             {
                 KeyMapShareDialog keyMapShareDialog = new KeyMapShareDialog(event.getProject());
