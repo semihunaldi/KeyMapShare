@@ -8,6 +8,7 @@ import com.semihunaldi.intellij.plugin.backend.ws.user.model.AuthenticationRespo
 import com.semihunaldi.intellij.plugin.backend.ws.user.model.LoginRequest;
 import com.semihunaldi.intellij.plugin.backend.ws.user.model.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,7 +18,7 @@ public class UserWebServiceController extends BaseWebServiceController implement
     private UserService userService;
 
     @Override
-    public AuthenticationResponse signup(AuthenticationRequest authenticationRequest)
+    public AuthenticationResponse signup(@RequestBody AuthenticationRequest authenticationRequest)
     {
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
         try
@@ -36,7 +37,7 @@ public class UserWebServiceController extends BaseWebServiceController implement
     }
 
     @Override
-    public LoginResponse login(LoginRequest loginRequest)
+    public LoginResponse login(@RequestBody LoginRequest loginRequest)
     {
         LoginResponse loginResponse = new LoginResponse();
         try

@@ -12,5 +12,10 @@
     <orderEntry type="library" name="commons-io-2.4" level="project" />
     <orderEntry type="library" name="spring-core-4.3.9.RELEASE (2)" level="project" />
     <orderEntry type="library" name="spring-web-3.0.2.RELEASE (4)" level="project" />
+    <orderEntry type="library" name="jackson-annotations-2.8.9" level="project" />
+    <orderEntry type="library" name="jackson-core-2.8.9" level="project" />
+    <orderEntry type="library" name="jackson-databind-2.8.9" level="project" />
+    <orderEntry type="library" name="jackson-mapper-asl-1.9.13" level="project" />
+    <orderEntry type="library" name="jackson-core-asl-1.9.13" level="project" />
   </component>
 </module>

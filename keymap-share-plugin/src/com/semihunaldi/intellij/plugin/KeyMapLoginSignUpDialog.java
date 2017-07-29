@@ -13,6 +13,8 @@ import com.semihunaldi.intellij.plugin.util.KeyMapConstants;
 import com.semihunaldi.intellij.plugin.view.KeyMapLoginSignUpUI;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import javax.swing.*;
@@ -54,6 +56,8 @@ public class KeyMapLoginSignUpDialog extends DialogWrapper
                 validate(email, password);
                 URI uri = URI.create(KeyMapConstants.LOGIN_WS_URL);
                 RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJacksonHttpMessageConverter());
+                restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
                 LoginRequest loginRequest = new LoginRequest(email, String.valueOf(password));
                 LoginResponse loginResponse = restTemplate.postForObject(uri, loginRequest, LoginResponse.class);
                 if(loginResponse.getErrorCode() == 0)
