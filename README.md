@@ -6,7 +6,7 @@ run "mvn spring-boot:run on project keymapsharebackend"
 
 run keymap-share-plugin as intellij plugin
 
--Dspring.config.name=application.dev
+put this as VM argument -Dspring.config.name=application.dev
 
 test user : test@test.com
 
