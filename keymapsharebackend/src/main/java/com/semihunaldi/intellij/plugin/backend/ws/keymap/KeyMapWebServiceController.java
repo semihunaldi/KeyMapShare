@@ -14,6 +14,7 @@ import com.semihunaldi.intellij.plugin.backend.ws.keymap.model.UploadKeyMapReque
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class KeyMapWebServiceController extends BaseWebServiceController impleme
     private KeyMapService keyMapService;
 
     @Override
-    public GetKeyMapHelper getKeyMap(GetKeyMapRequest getKeyMapRequest)
+    public GetKeyMapHelper getKeyMap(@RequestBody GetKeyMapRequest getKeyMapRequest)
     {
         GetKeyMapHelper getKeyMapHelper = new GetKeyMapHelper();
         try
@@ -45,7 +46,7 @@ public class KeyMapWebServiceController extends BaseWebServiceController impleme
     }
 
     @Override
-    public KeyMapsOfUser getKeyMapsOfUser(GetKeyMapsOfUserRequest getKeyMapsOfUserRequest)
+    public KeyMapsOfUser getKeyMapsOfUser(@RequestBody GetKeyMapsOfUserRequest getKeyMapsOfUserRequest)
     {
         KeyMapsOfUser keyMapsOfUser = new KeyMapsOfUser();
         try
@@ -69,7 +70,7 @@ public class KeyMapWebServiceController extends BaseWebServiceController impleme
     }
 
     @Override
-    public BaseResult uploadKeyMap(UploadKeyMapRequest uploadKeyMapRequest)
+    public BaseResult uploadKeyMap(@RequestBody UploadKeyMapRequest uploadKeyMapRequest)
     {
         BaseResult baseResult = new BaseResult();
         try

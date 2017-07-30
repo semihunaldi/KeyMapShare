@@ -15,7 +15,7 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Data
-@Table(name = "T_KEYMAP", uniqueConstraints = {@UniqueConstraint(name = "T_KEYMAP_NAME_UNIQUE_ID", columnNames = "name")})
+@Table(name = "T_KEYMAP", uniqueConstraints = {@UniqueConstraint(name = "T_KEYMAP_NAME_UNIQUE_ID", columnNames = {"name","USER_ID"})})
 @DynamicUpdate
 @EqualsAndHashCode(callSuper = true, of="")
 @Where(clause = "DELETED = '0'")

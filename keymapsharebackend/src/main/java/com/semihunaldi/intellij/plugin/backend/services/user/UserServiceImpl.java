@@ -10,6 +10,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.ConstraintViolationException;
+
 @Component
 public class UserServiceImpl extends BaseServiceImpl implements UserService
 {
@@ -29,6 +31,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService
             String token = Util.generateToken();
             user.setLastToken(token);
             return this.userRepository.save(user);
+        }
+        catch (ConstraintViolationException cve)
+        {
+            throw new RuntimeException("User exists with email : " + email);
         }
         catch (DataIntegrityViolationException e)
         {

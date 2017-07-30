@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping(path = "/api/keymap")
 public interface KeymapWebService
 {
-    @RequestMapping(value = "/getKeyMap", method = RequestMethod.GET)
+    @RequestMapping(value = "/getKeyMap", method = RequestMethod.POST)
     public GetKeyMapHelper getKeyMap(@RequestBody GetKeyMapRequest getKeyMapRequest);
 
-    @RequestMapping(value = "/getKeyMapsOfUser", method = RequestMethod.GET)
+    @RequestMapping(value = "/getKeyMapsOfUser", method = RequestMethod.POST)
     public KeyMapsOfUser getKeyMapsOfUser(@RequestBody GetKeyMapsOfUserRequest getKeyMapsOfUserRequest);
 
     @RequestMapping(value = "/uploadKeyMap", method = RequestMethod.POST)

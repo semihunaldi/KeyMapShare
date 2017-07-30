@@ -59,7 +59,7 @@ public class KeyMapLoginSignUpUI extends JDialog
                 if(loginResponse.getErrorCode() == 0)
                 {
                     prefs.put(KeyMapConstants.USER_EMAIL,loginResponse.getEmail());
-                    prefs.put(KeyMapConstants.USER_TOKEN.concat(loginResponse.getEmail()),loginResponse.getToken());
+                    prefs.put(KeyMapConstants.USER_TOKEN,loginResponse.getToken());
                     prefs.put(KeyMapConstants.USER_LOGGED_IN,Boolean.TRUE.toString());
                     openMainDialog(project,keyMapLoginSignUpDialog);
                 }
@@ -91,7 +91,7 @@ public class KeyMapLoginSignUpUI extends JDialog
                 if(authenticationResponse.getErrorCode() == 0)
                 {
                     prefs.put(KeyMapConstants.USER_EMAIL,authenticationResponse.getEmail());
-                    prefs.put(KeyMapConstants.USER_TOKEN.concat(authenticationResponse.getEmail()),authenticationResponse.getToken());
+                    prefs.put(KeyMapConstants.USER_TOKEN,authenticationResponse.getToken());
                     prefs.put(KeyMapConstants.USER_LOGGED_IN,Boolean.TRUE.toString());
                     openMainDialog(project,keyMapLoginSignUpDialog);
                 }
