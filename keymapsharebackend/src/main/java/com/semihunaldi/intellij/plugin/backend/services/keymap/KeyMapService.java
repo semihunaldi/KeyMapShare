@@ -9,7 +9,7 @@ public interface KeyMapService extends BaseService
 {
     List<KeyMap> findUserKeyMaps(String email, String token);
 
-    void downloadKeyMap(String email, String name, String token);
+    byte[] downloadKeyMap(String email, String name, String token);
 
-    void uploadKeyMap(String token);
+    void uploadKeyMap(String keyMapName, String email, String base64EncodedXML, String token);
 }

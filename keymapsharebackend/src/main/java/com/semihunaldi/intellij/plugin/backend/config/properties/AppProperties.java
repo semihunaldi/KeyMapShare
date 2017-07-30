@@ -13,4 +13,5 @@ public class AppProperties
 {
     private String testProperty;
     private String environment;
+    private String keyMapsBasePath;
 }

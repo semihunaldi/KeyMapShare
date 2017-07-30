@@ -5,9 +5,17 @@ import com.semihunaldi.intellij.plugin.backend.model.keymap.KeyMap;
 import com.semihunaldi.intellij.plugin.backend.model.user.User;
 import com.semihunaldi.intellij.plugin.backend.services.BaseServiceImpl;
 import com.semihunaldi.intellij.plugin.backend.services.user.UserService;
+import com.semihunaldi.intellij.plugin.backend.util.Util;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 @Component
@@ -29,19 +37,48 @@ public class KeyMapServiceImpl extends BaseServiceImpl implements KeyMapService
     }
 
     @Override
-    public void downloadKeyMap(String email, String name, String token)
+    public byte[] downloadKeyMap(String email, String name, String token)
     {
-        User user = userService.findUserByEmail(email);
-        checkToken(token,user);
-        KeyMap keyMap = keyMapRepository.findKeyMapByNameAndUserId(name, user.getId());
-        keyMap.getPath();
-        //TODO
+        try
+        {
+            User user = userService.findUserByEmail(email);
+            checkToken(token,user);
+            KeyMap keyMap = keyMapRepository.findKeyMapByNameAndUserId(name, user.getId());
+            File file = new File(keyMap.getPath());
+            if(!file.exists() || !file.isFile())
+            {
+                throw new RuntimeException("Keymap can not be found");
+            }
+            InputStream targetStream = new FileInputStream(file);
+            return IOUtils.toByteArray(targetStream);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Error "+ e.getMessage());
+        }
     }
 
     @Override
-    public void uploadKeyMap(String token)
+    @Transactional
+    public void uploadKeyMap(String keyMapName, String email, String base64EncodedXML, String token)
     {
-        //TODO
+        try
+        {
+            User user = userService.findUserByEmail(email);
+            checkToken(token,user);
+            KeyMap keyMap = new KeyMap();
+            keyMap.setName(keyMapName);
+            keyMap.setUser(user);
+            File file = new File(appProperties.getKeyMapsBasePath().concat("/").concat(keyMapName).concat(Util.getUUIDWithoutDashes(user.getId())).concat(".xml"));
+            keyMap.setPath(file.getAbsolutePath());
+            byte[] decodedXML = Base64.decode(base64EncodedXML);
+            FileUtils.writeByteArrayToFile(file, decodedXML);
+            keyMapRepository.save(keyMap);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Error "+ e.getMessage());
+        }
     }
 
     private void checkToken(String token, User user)

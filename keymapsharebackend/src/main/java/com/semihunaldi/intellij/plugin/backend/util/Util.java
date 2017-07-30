@@ -72,4 +72,9 @@ public class Util
     {
         return UUID.randomUUID().toString().toLowerCase().replace("-","");
     }
+
+    public static String getUUIDWithoutDashes(String uuid)
+    {
+        return uuid.replace("-","");
+    }
 }
