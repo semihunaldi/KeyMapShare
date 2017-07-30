@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class KeyMapDialogUI extends JDialog
@@ -56,7 +57,7 @@ public class KeyMapDialogUI extends JDialog
         restTemplate.getMessageConverters().add(new MappingJacksonHttpMessageConverter());
         restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
         prepareLocalKeyMapsList(project);
-        prepareCloudKeyMapsList(project);
+        prepareCloudKeyMapsList(project,dialogWrapper);
         prepareUploadButtonListener(project, dialogWrapper);
         prepareDownloadButtonListener(project);
         prepareLogOutButtonListener(project, dialogWrapper);
@@ -159,7 +160,7 @@ public class KeyMapDialogUI extends JDialog
         });
     }
 
-    private void prepareCloudKeyMapsList(Project project)
+    private void prepareCloudKeyMapsList(Project project, DialogWrapper dialogWrapper)
     {
         try
         {
@@ -182,6 +183,18 @@ public class KeyMapDialogUI extends JDialog
         {
             Notification notification = new Notification("keyMapShareError", "Keymap Share", e.getMessage(), NotificationType.ERROR);
             notification.notify(project);
+            try
+            {
+                prefs.put(KeyMapConstants.USER_EMAIL, "");
+                prefs.put(KeyMapConstants.USER_TOKEN, "");
+                prefs.put(KeyMapConstants.USER_LOGGED_IN, Boolean.FALSE.toString());
+                prefs.flush();
+            }
+            catch (BackingStoreException e1)
+            {
+                System.out.println("oops");
+            }
+            dialogWrapper.close(0);
         }
     }
 
