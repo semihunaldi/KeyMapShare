@@ -8,6 +8,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.components.JBList;
 import com.jgoodies.common.base.Preconditions;
+import com.semihunaldi.intellij.plugin.KeyMapShareAction;
+import com.semihunaldi.intellij.plugin.RestartDialog;
 import com.semihunaldi.intellij.plugin.restmodel.BaseResult;
 import com.semihunaldi.intellij.plugin.restmodel.GetKeyMapHelper;
 import com.semihunaldi.intellij.plugin.restmodel.GetKeyMapRequest;
@@ -41,8 +43,9 @@ public class KeyMapDialogUI extends JDialog
     private JBList keymapListCloud;
     private JButton uploadSelectedButton;
     private JButton downloadSelectedButton;
+    private JButton logOutButton;
 
-    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+    private Preferences prefs = Preferences.userNodeForPackage(KeyMapShareAction.class);
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -56,6 +59,27 @@ public class KeyMapDialogUI extends JDialog
         prepareCloudKeyMapsList(project);
         prepareUploadButtonListener(project, dialogWrapper);
         prepareDownloadButtonListener(project);
+        prepareLogOutButtonListener(project, dialogWrapper);
+    }
+
+    private void prepareLogOutButtonListener(Project project, DialogWrapper dialogWrapper)
+    {
+        logOutButton.addActionListener(event ->
+        {
+            try
+            {
+                prefs.put(KeyMapConstants.USER_EMAIL, "");
+                prefs.put(KeyMapConstants.USER_TOKEN, "");
+                prefs.put(KeyMapConstants.USER_LOGGED_IN, Boolean.FALSE.toString());
+                prefs.flush();
+                dialogWrapper.close(0);
+            }
+            catch (Exception e)
+            {
+                Notification notification = new Notification("keyMapShareError", "Keymap Share", "Unexpected Error Occurred", NotificationType.ERROR);
+                notification.notify(project);
+            }
+        });
     }
 
     private void prepareDownloadButtonListener(Project project)
@@ -65,25 +89,26 @@ public class KeyMapDialogUI extends JDialog
             try
             {
                 String selectedKeyMapName = (String) keymapListCloud.getSelectedValue();
-                Preconditions.checkArgument(StringUtils.isNotBlank(selectedKeyMapName),"Please select a keymap to download");
+                Preconditions.checkArgument(StringUtils.isNotBlank(selectedKeyMapName), "Please select a keymap to download");
                 String ideaConfigBasePath = System.getProperties().getProperty("idea.config.path");
                 File ideaKeyMapsFolder = new File(ideaConfigBasePath.concat("/keymaps/"));
                 File keymapToSave = new File(ideaKeyMapsFolder.getAbsolutePath().concat("/").concat(selectedKeyMapName).concat(".xml"));
-                if(keymapToSave.exists())
+                if (keymapToSave.exists())
                 {
                     throw new IllegalArgumentException("Key Map already exists with name : " + selectedKeyMapName);
                 }
-                String email = prefs.get(KeyMapConstants.USER_EMAIL,"");
-                String token = prefs.get(KeyMapConstants.USER_TOKEN,"");
-                GetKeyMapRequest getKeyMapRequest = new GetKeyMapRequest(selectedKeyMapName,email,token);
+                String email = prefs.get(KeyMapConstants.USER_EMAIL, "");
+                String token = prefs.get(KeyMapConstants.USER_TOKEN, "");
+                GetKeyMapRequest getKeyMapRequest = new GetKeyMapRequest(selectedKeyMapName, email, token);
                 URI uri = URI.create(KeyMapConstants.GET_KEYMAP_WS);
                 GetKeyMapHelper getKeyMapHelper = restTemplate.postForObject(uri, getKeyMapRequest, GetKeyMapHelper.class);
-                if(getKeyMapHelper.getErrorCode() == 0)
+                if (getKeyMapHelper.getErrorCode() == 0)
                 {
-                    ;
                     byte[] decodedXML = Base64.decode(getKeyMapHelper.getBase64EncodedXML());
                     FileUtils.writeByteArrayToFile(keymapToSave, decodedXML);
-                    //TODO make user restart intellij
+                    RestartDialog restartDialog = new RestartDialog(project);
+                    restartDialog.createCenterPanel();
+                    restartDialog.show();
                 }
                 else
                 {
@@ -92,7 +117,7 @@ public class KeyMapDialogUI extends JDialog
             }
             catch (Exception e)
             {
-                Notification notification = new Notification("keyMapShareError","Keymap Share",e.getMessage(), NotificationType.ERROR);
+                Notification notification = new Notification("keyMapShareError", "Keymap Share", e.getMessage(), NotificationType.ERROR);
                 notification.notify(project);
             }
         });
@@ -105,19 +130,19 @@ public class KeyMapDialogUI extends JDialog
             try
             {
                 String selectedKeyMapName = (String) keymapListLocal.getSelectedValue();
-                Preconditions.checkArgument(StringUtils.isNotBlank(selectedKeyMapName),"Please select a keymap to upload");
+                Preconditions.checkArgument(StringUtils.isNotBlank(selectedKeyMapName), "Please select a keymap to upload");
                 File keyMapFile = KeyMapUtil.getKeyMapFile(selectedKeyMapName);
                 InputStream targetStream = new FileInputStream(keyMapFile);
                 byte[] fileByteArray = IOUtils.toByteArray(targetStream);
                 String encodedBase64XML = Base64.encode(fileByteArray);
-                String email = prefs.get(KeyMapConstants.USER_EMAIL,"");
-                String token = prefs.get(KeyMapConstants.USER_TOKEN,"");
-                UploadKeyMapRequest uploadKeyMapRequest = new UploadKeyMapRequest(selectedKeyMapName,email,encodedBase64XML,token);
+                String email = prefs.get(KeyMapConstants.USER_EMAIL, "");
+                String token = prefs.get(KeyMapConstants.USER_TOKEN, "");
+                UploadKeyMapRequest uploadKeyMapRequest = new UploadKeyMapRequest(selectedKeyMapName, email, encodedBase64XML, token);
                 URI uri = URI.create(KeyMapConstants.UPLOAD_KEYMAP_WS);
                 BaseResult baseResult = restTemplate.postForObject(uri, uploadKeyMapRequest, BaseResult.class);
-                if(baseResult.getErrorCode() == 0)
+                if (baseResult.getErrorCode() == 0)
                 {
-                    Notification notification = new Notification("keyMapShareUpload","Keymap Share","Keymap Successfully uploaded", NotificationType.INFORMATION);
+                    Notification notification = new Notification("keyMapShareUpload", "Keymap Share", "Keymap Successfully uploaded", NotificationType.INFORMATION);
                     notification.notify(project);
                     dialogWrapper.close(0);
                 }
@@ -128,7 +153,7 @@ public class KeyMapDialogUI extends JDialog
             }
             catch (Exception e)
             {
-                Notification notification = new Notification("keyMapShareError","Keymap Share",e.getMessage(), NotificationType.ERROR);
+                Notification notification = new Notification("keyMapShareError", "Keymap Share", e.getMessage(), NotificationType.ERROR);
                 notification.notify(project);
             }
         });
@@ -138,12 +163,12 @@ public class KeyMapDialogUI extends JDialog
     {
         try
         {
-            String email = prefs.get(KeyMapConstants.USER_EMAIL,"");
-            String token = prefs.get(KeyMapConstants.USER_TOKEN,"");
-            GetKeyMapsOfUserRequest getKeyMapsOfUserRequest = new GetKeyMapsOfUserRequest(email,token);
+            String email = prefs.get(KeyMapConstants.USER_EMAIL, "");
+            String token = prefs.get(KeyMapConstants.USER_TOKEN, "");
+            GetKeyMapsOfUserRequest getKeyMapsOfUserRequest = new GetKeyMapsOfUserRequest(email, token);
             URI uri = URI.create(KeyMapConstants.GET_KEYMAPSOFUSER_WS);
             KeyMapsOfUser keyMapsOfUser = restTemplate.postForObject(uri, getKeyMapsOfUserRequest, KeyMapsOfUser.class);
-            if(keyMapsOfUser.getErrorCode() == 0)
+            if (keyMapsOfUser.getErrorCode() == 0)
             {
                 keymapListCloud.setListData(keyMapsOfUser.getKeyMapNames().toArray());
                 keymapListCloud.setVisible(true);
@@ -155,7 +180,7 @@ public class KeyMapDialogUI extends JDialog
         }
         catch (Exception e)
         {
-            Notification notification = new Notification("keyMapShareError","Keymap Share",e.getMessage(), NotificationType.ERROR);
+            Notification notification = new Notification("keyMapShareError", "Keymap Share", e.getMessage(), NotificationType.ERROR);
             notification.notify(project);
         }
     }
@@ -172,7 +197,7 @@ public class KeyMapDialogUI extends JDialog
         List<String> keymaps = new ArrayList<>();
         for (Keymap keymap : KeymapManagerEx.getInstanceEx().getAllKeymaps())
         {
-            if(isUserKeyMap(keymap))
+            if (isUserKeyMap(keymap))
             {
                 keymaps.add(keymap.getName());
             }
@@ -182,11 +207,11 @@ public class KeyMapDialogUI extends JDialog
 
     private boolean isUserKeyMap(Keymap keymap)
     {
-        if(keymap.getParent()!= null && keymap.getParent().getName().equals("$default"))
+        if (keymap.getParent() != null && keymap.getParent().getName().equals("$default"))
         {
             return false;
         }
-        else if(keymap.getParent()!= null && !keymap.getParent().getName().equals("$default"))
+        else if (keymap.getParent() != null && !keymap.getParent().getName().equals("$default"))
         {
             return true;
         }
@@ -225,5 +250,10 @@ public class KeyMapDialogUI extends JDialog
     public JButton getDownloadSelectedButton()
     {
         return downloadSelectedButton;
+    }
+
+    public JButton getLogOutButton()
+    {
+        return logOutButton;
     }
 }

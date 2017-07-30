@@ -7,6 +7,7 @@ import com.semihunaldi.intellij.plugin.backend.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +19,16 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional
     public User createUser(String email, String password, String gitHubId)
     {
         User user = new User();
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setGitHubId(gitHubId);
         try
         {
@@ -51,7 +55,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService
             throw new RuntimeException("Password can not be null");
         }
         User user = findUserByEmail(email);
-        if(password.equals(user.getPassword()))
+        if(passwordEncoder.matches(password,user.getPassword()))
         {
             user.setLastToken(Util.generateToken());
             User savedUser = userRepository.save(user);

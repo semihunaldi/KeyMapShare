@@ -4,6 +4,7 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import com.semihunaldi.intellij.plugin.KeyMapLoginSignUpDialog;
+import com.semihunaldi.intellij.plugin.KeyMapShareAction;
 import com.semihunaldi.intellij.plugin.KeyMapShareDialog;
 import com.semihunaldi.intellij.plugin.restmodel.AuthenticationRequest;
 import com.semihunaldi.intellij.plugin.restmodel.AuthenticationResponse;
@@ -32,7 +33,7 @@ public class KeyMapLoginSignUpUI extends JDialog
     private JPasswordField signupConfirmPasswordField;
     private JButton signupButton;
 
-    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+    private Preferences prefs = Preferences.userNodeForPackage(KeyMapShareAction.class);
 
     public KeyMapLoginSignUpUI(KeyMapLoginSignUpDialog keyMapLoginSignUpDialog, Project project)
     {
@@ -61,6 +62,7 @@ public class KeyMapLoginSignUpUI extends JDialog
                     prefs.put(KeyMapConstants.USER_EMAIL,loginResponse.getEmail());
                     prefs.put(KeyMapConstants.USER_TOKEN,loginResponse.getToken());
                     prefs.put(KeyMapConstants.USER_LOGGED_IN,Boolean.TRUE.toString());
+                    prefs.flush();
                     openMainDialog(project,keyMapLoginSignUpDialog);
                 }
                 else
@@ -93,6 +95,7 @@ public class KeyMapLoginSignUpUI extends JDialog
                     prefs.put(KeyMapConstants.USER_EMAIL,authenticationResponse.getEmail());
                     prefs.put(KeyMapConstants.USER_TOKEN,authenticationResponse.getToken());
                     prefs.put(KeyMapConstants.USER_LOGGED_IN,Boolean.TRUE.toString());
+                    prefs.flush();
                     openMainDialog(project,keyMapLoginSignUpDialog);
                 }
                 else
@@ -113,7 +116,7 @@ public class KeyMapLoginSignUpUI extends JDialog
         KeyMapShareDialog keyMapShareDialog = new KeyMapShareDialog(project);
         keyMapShareDialog.createCenterPanel();
         keyMapShareDialog.show();
-        keyMapLoginSignUpDialog.close(0);
+        keyMapLoginSignUpDialog.close(0);//TODO not closing ????
     }
 
     private void checkPasswordsSame(char[] password, char[] confirmPassword)

@@ -4,16 +4,13 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.keymap.Keymap;
 import com.semihunaldi.intellij.plugin.util.KeyMapConstants;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.util.prefs.Preferences;
 
 public class KeyMapShareAction extends AnAction
 {
-    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+    private Preferences prefs = Preferences.userNodeForPackage(KeyMapShareAction.class);
 
     @Override
     public void actionPerformed(AnActionEvent event)
@@ -21,7 +18,7 @@ public class KeyMapShareAction extends AnAction
         try
         {
             //TODO for tests
-            prefs.put(KeyMapConstants.USER_LOGGED_IN,Boolean.FALSE.toString());
+//            prefs.put(KeyMapConstants.USER_LOGGED_IN,Boolean.FALSE.toString());
             if(isUserLoggedIn())
             {
                 KeyMapShareDialog keyMapShareDialog = new KeyMapShareDialog(event.getProject());
