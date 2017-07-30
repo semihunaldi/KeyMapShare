@@ -1,8 +1,10 @@
 Key Map Sharing Intellij Plugin...
 
-run "mvn clean install" on project root.
+run "mvn clean install" on project keymapsharebackend.
 
-run "mvn spring-boot:run on project root"
+run "mvn spring-boot:run on project keymapsharebackend"
+
+run keymap-share-plugin as intellij plugin
 
 -Dspring.config.name=application.dev
 
