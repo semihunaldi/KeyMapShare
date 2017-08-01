@@ -10,11 +10,9 @@ import com.sun.org.apache.xml.internal.security.utils.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ConstraintViolationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -76,14 +74,6 @@ public class KeyMapServiceImpl extends BaseServiceImpl implements KeyMapService
             byte[] decodedXML = Base64.decode(base64EncodedXML);
             FileUtils.writeByteArrayToFile(file, decodedXML);
             keyMapRepository.save(keyMap);
-        }
-        catch (ConstraintViolationException cve)
-        {
-            throw new RuntimeException("Key map exists with keymap name : "+ keyMapName);
-        }
-        catch (DataIntegrityViolationException dive)
-        {
-            throw new RuntimeException("Key map exists with keymap name : "+ keyMapName);
         }
         catch (Exception e)
         {

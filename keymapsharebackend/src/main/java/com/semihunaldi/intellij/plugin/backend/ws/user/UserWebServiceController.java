@@ -8,6 +8,7 @@ import com.semihunaldi.intellij.plugin.backend.ws.user.model.AuthenticationRespo
 import com.semihunaldi.intellij.plugin.backend.ws.user.model.LoginRequest;
 import com.semihunaldi.intellij.plugin.backend.ws.user.model.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +28,11 @@ public class UserWebServiceController extends BaseWebServiceController implement
             authenticationResponse.setEmail(user.getEmail());
             authenticationResponse.setGitHubId(user.getGitHubId());
             authenticationResponse.setToken(user.getLastToken());
+        }
+        catch (DataIntegrityViolationException e)
+        {
+            authenticationResponse.setErrorCode(-1);
+            authenticationResponse.setErrorDescription("User exists with email : " + authenticationRequest.getEmail());
         }
         catch (Exception e)
         {

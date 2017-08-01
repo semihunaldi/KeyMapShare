@@ -14,6 +14,7 @@ import com.semihunaldi.intellij.plugin.backend.ws.keymap.model.UploadKeyMapReque
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -80,6 +81,11 @@ public class KeyMapWebServiceController extends BaseWebServiceController impleme
             Preconditions.checkArgument(StringUtils.isNotBlank(uploadKeyMapRequest.getToken()),"token can not be null");
             Preconditions.checkArgument(StringUtils.isNotBlank(uploadKeyMapRequest.getBase64EncodedXML()),"base64EncodedXML can not be null");
             keyMapService.uploadKeyMap(uploadKeyMapRequest.getKeyMapName(),uploadKeyMapRequest.getEmail(),uploadKeyMapRequest.getBase64EncodedXML(),uploadKeyMapRequest.getToken());
+        }
+        catch (DataIntegrityViolationException dive)
+        {
+            baseResult.setErrorCode(-1);
+            baseResult.setErrorDescription("Key map exists with keymap name : "+ uploadKeyMapRequest.getKeyMapName());
         }
         catch (Exception e)
         {

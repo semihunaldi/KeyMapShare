@@ -11,8 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ConstraintViolationException;
-
 @Component
 public class UserServiceImpl extends BaseServiceImpl implements UserService
 {
@@ -24,26 +22,15 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService
 
     @Override
     @Transactional
-    public User createUser(String email, String password, String gitHubId)
+    public User createUser(String email, String password, String gitHubId) throws DataIntegrityViolationException
     {
         User user = new User();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setGitHubId(gitHubId);
-        try
-        {
-            String token = Util.generateToken();
-            user.setLastToken(token);
-            return this.userRepository.save(user);
-        }
-        catch (ConstraintViolationException cve)
-        {
-            throw new RuntimeException("User exists with email : " + email);
-        }
-        catch (DataIntegrityViolationException e)
-        {
-            throw new RuntimeException("User exists with email : " + email);
-        }
+        String token = Util.generateToken();
+        user.setLastToken(token);
+        return this.userRepository.save(user);
     }
 
     @Override
