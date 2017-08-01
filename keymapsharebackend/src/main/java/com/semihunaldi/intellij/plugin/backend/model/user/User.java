@@ -18,7 +18,7 @@ import java.util.Set;
 
 @Entity
 @Data
-@Table(name = "T_USER",uniqueConstraints = {@UniqueConstraint(name = "T_USER_EMAIL_UNIQUE_ID",columnNames = "email")})
+@Table(name = "T_USER",uniqueConstraints = {@UniqueConstraint(name = "T_USER_EMAIL_UNIQUE_ID",columnNames = {"email","deleted"})})
 @DynamicUpdate
 @EqualsAndHashCode(callSuper = true, of="")
 @Where(clause = "DELETED = '0'")
